@@ -1,0 +1,30 @@
+package internal
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+)
+
+func GetFileMetadata(url string) (int64, error) {
+	resp, err := http.Head(url)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("server error: %v", resp.Status)
+	}
+
+	if resp.Header.Get("Accept-Ranges") != "bytes" {
+		return 0, fmt.Errorf("server does not support partial content downloads")
+	}
+
+	size, err := strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid content-length: %v", err)
+	}
+
+	return size, nil
+}
