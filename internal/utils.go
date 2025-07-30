@@ -39,5 +39,6 @@ func CleanUpTemp(chunks []Chunk) error {
 			return err
 		}
 	}
+	fmt.Println("Cleaned up all the temporary files")
 	return nil
 }
