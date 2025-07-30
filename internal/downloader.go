@@ -10,7 +10,7 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-func DownloadChunk(url string, chunk Chunk, wg *sync.WaitGroup) {
+func DownloadChunk(url string, chunk Chunk, bar *progressbar.ProgressBar, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	req, _ := http.NewRequest("GET", url, nil)
@@ -30,10 +30,6 @@ func DownloadChunk(url string, chunk Chunk, wg *sync.WaitGroup) {
 	}
 	defer f.Close()
 
-	bar := progressbar.DefaultBytes(
-		resp.ContentLength,
-		fmt.Sprintf("downloading chunk %d", chunk.ID),
-	)
 	_, err = io.Copy(io.MultiWriter(f, bar), resp.Body)
 	if err != nil {
 		fmt.Println("=== Failed to write the file", err)

@@ -5,6 +5,7 @@ import (
 	"godownload/internal"
 	"sync"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -43,11 +44,16 @@ var (
 		Use:   "download",
 		Short: "Download the file in the given link",
 		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Program started!")
 			size, _ := internal.GetFileMetadata(url)
 			chunks := internal.CreateChunks(size, numChunks)
+			bar := progressbar.DefaultBytes(
+				size,
+				"downloading",
+			)
 			for _, c := range chunks {
 				wg.Add(1)
-				go internal.DownloadChunk(url, c, &wg)
+				go internal.DownloadChunk(url, c, bar, &wg)
 			}
 			wg.Wait()
 			fmt.Println("Downloaded successfully!")
