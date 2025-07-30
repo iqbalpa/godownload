@@ -58,6 +58,7 @@ var (
 			wg.Wait()
 			fmt.Println("Downloaded successfully!")
 			internal.MergeChunks(chunks, output)
+			internal.CleanUpTemp(chunks)
 		},
 	}
 )

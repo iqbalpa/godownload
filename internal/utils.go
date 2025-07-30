@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -27,4 +28,16 @@ func GetFileMetadata(url string) (int64, error) {
 	}
 
 	return size, nil
+}
+
+func CleanUpTemp(chunks []Chunk) error {
+	fmt.Println("Cleaning up temp files...")
+	for _, c := range chunks {
+		err := os.Remove(c.Filename)
+		if err != nil {
+			fmt.Printf("Failed to delete %s\n", c.Filename)
+			return err
+		}
+	}
+	return nil
 }
